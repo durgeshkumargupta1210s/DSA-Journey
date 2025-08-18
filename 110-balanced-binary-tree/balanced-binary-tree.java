@@ -15,25 +15,29 @@
  */
 class Solution {
     public boolean isBalanced(TreeNode root) {
-        if(root==null){
-            return true;
-        }
-
-        boolean a=isBalanced(root.left);
-        boolean b=isBalanced(root.right);
-        boolean sb=Math.abs(height(root.left)-height(root.right))<=1;
-        return (a && b) && sb;
-        
+        return isBalance(root).isbal;
     }
 
-    public static int height(TreeNode root){
+    public BalancePair isBalance(TreeNode root){
         if(root==null){
-            return -1;
+            return new BalancePair();
         }
 
-        int lh=height(root.left);
-        int rh=height(root.right);
+        BalancePair lbp=isBalance(root.left);
+        BalancePair rbp=isBalance(root.right);
 
-        return Math.max(lh,rh)+1;
+        BalancePair sbp=new BalancePair();
+        sbp.ht=Math.max(lbp.ht,rbp.ht)+1;
+        boolean sb=Math.abs(lbp.ht-rbp.ht)<=1;
+
+        sbp.isbal=lbp.isbal && rbp.isbal && sb;
+        return sbp;
+
     }
+
+    class BalancePair{
+        boolean isbal=true;
+        int ht=-1;
+    }
+
 }
