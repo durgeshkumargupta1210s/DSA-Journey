@@ -14,39 +14,57 @@
  * }
  */
 class Solution {
-    TreeMap<Integer, TreeMap<Integer, List<Integer>>> map = new TreeMap<>();
-
     public List<List<Integer>> verticalTraversal(TreeNode root) {
-        List<List<Integer>> result = new ArrayList<>();
-        if (root == null) return result;
-
-        dfs(root, 0, 0);
-
-        // column-wise traversal
-        for (Map.Entry<Integer, TreeMap<Integer, List<Integer>>> entry : map.entrySet()) {
-            TreeMap<Integer, List<Integer>> levelMap = entry.getValue();
-            List<Integer> list = new ArrayList<>();
-
-            // level-wise traversal
-            for (Map.Entry<Integer, List<Integer>> subEntry : levelMap.entrySet()) {
-                List<Integer> sublist = subEntry.getValue();
-                Collections.sort(sublist); // sort values in same row, col
-                list.addAll(sublist);
+        Queue<VerticalPair>q=new LinkedList<>();
+        TreeMap<Integer, List<VerticalPair>> map = new TreeMap<>();
+        q.add(new VerticalPair(root,0,0));
+        while(!q.isEmpty()){
+            VerticalPair vp = q.poll();
+            if(!map.containsKey(vp.v)){
+                map.put(vp.v,new ArrayList<>());
             }
-
-            result.add(list);
+            map.get(vp.v).add(vp);
+            if(vp.node.left!=null){
+                q.add(new VerticalPair(vp.node.left,vp.l+1,vp.v-1));
+            }
+            if(vp.node.right != null){
+                q.add(new VerticalPair(vp.node.right,vp.l+1,vp.v+1));
+            }
         }
-        return result;
+
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        for (int key  : map.keySet()){
+            List<VerticalPair> ll = map.get(key);
+            Collections.sort(ll, new Comparator<VerticalPair> (){
+                @Override
+                public int compare(VerticalPair o1, VerticalPair o2){
+                    if(o1.l == o2.l){
+                        return o1.node.val - o2.node.val;
+                    }
+                    return 0;
+                }
+            });
+
+            List<Integer> list = new ArrayList<>();
+            for (VerticalPair v : ll){
+                list.add(v.node.val);
+            }
+            ans.add(list);
+        }
+
+        return ans;
+    
     }
 
-    public void dfs(TreeNode root, int col, int level) {
-        if (root == null) return;
+    class VerticalPair{
+        TreeNode node;
+        int l; // row(level)
+        int v; // col
 
-        map.putIfAbsent(col, new TreeMap<>());
-        map.get(col).putIfAbsent(level, new ArrayList<>());
-        map.get(col).get(level).add(root.val);
-
-        dfs(root.left, col - 1, level + 1);
-        dfs(root.right, col + 1, level + 1);
+        public VerticalPair(TreeNode node, int l, int v){
+            this.l = l;
+            this.v = v;
+            this.node = node;
+        }
     }
 }
