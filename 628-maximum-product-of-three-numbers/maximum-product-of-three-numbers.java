@@ -1,19 +1,13 @@
 class Solution {
     public int maximumProduct(int[] nums) {
-       return maxproduct(nums) ;
-    }
-    private static int maxproduct(int[] nums) {
+        int ans=Integer.MIN_VALUE;
+        int n=nums.length;
         Arrays.sort(nums);
+        int product1=nums[n-1]*nums[n-2]*nums[n-3]; // if only positive 
+        int product2=nums[0]*nums[1]*nums[n-1];// if two -ve are at the starting and and a positive are on the last
+           
+        ans=Math.max(product1,product2);
+        return ans;
         
-        int n = nums.length;
-  
-        int maxProduct1 = nums[n - 1] * nums[n - 2] * nums[n - 3];
-        
-       // Product of the two smallest numbers (negative) and the largest number
-        int maxProduct2 = nums[0] * nums[1] * nums[n - 1];
-        
-        return Math.max(maxProduct1, maxProduct2);
     }
-
-
 }
