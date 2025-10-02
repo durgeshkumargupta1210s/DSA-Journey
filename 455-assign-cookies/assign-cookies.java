@@ -1,23 +1,30 @@
 class Solution {
     public int findContentChildren(int[] g, int[] s) {
+        // Sort greed factors of children (ascending order)
+        // and cookie sizes (ascending order)
         Arrays.sort(g);
         Arrays.sort(s);
 
-        int i=g.length-1;
-        int j=s.length-1;
-        int count=0;
+        // Start from the end (largest greed & largest cookie)
+        int i = g.length - 1;  // pointer for children
+        int j = s.length - 1;  // pointer for cookies
+        int count = 0;         // number of satisfied children
 
-        while(i>=0 && j>=0){
-            if(s[j]>=g[i]){
-                count++;
+        // Process until either children or cookies run out
+        while (i >= 0 && j >= 0) {
+            // If the largest available cookie can satisfy the current child
+            if (s[j] >= g[i]) {
+                count++;  // assign cookie
+                i--;      // move to next child
+                j--;      // move to next cookie
+            } else {
+                // If cookie is too small, skip this child
+                // (maybe a smaller child can be satisfied later)
                 i--;
-                j--;
             }
-           else{
-            i--;
-           }
         }
 
+        // Return total number of children who got cookies
         return count;
     }
 }
