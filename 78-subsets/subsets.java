@@ -1,21 +1,23 @@
-import java.util.*;
-
 class Solution {
+    List<List<Integer>> result=new ArrayList<>();
     public List<List<Integer>> subsets(int[] nums) {
-        List<List<Integer>> result = new ArrayList<>();
-        int n = nums.length;
-        int total = 1 << n;  // 2^n total subsets
-
-        for (int mask = 0; mask < total; mask++) {
-            List<Integer> subset = new ArrayList<>();
-            for (int i = 0; i < n; i++) {
-                if ((mask & (1 << i)) != 0) {
-                    subset.add(nums[i]);
-                }
-            }
-            result.add(subset);
+        List<Integer> current=new ArrayList<>();
+        computeSubsets(nums,0, current);
+        return result;
+    }
+    public void computeSubsets(int [] nums,int idx, List<Integer>current){
+        if(idx==nums.length){
+            result.add(new ArrayList<>(current));
+            return;
         }
 
-        return result;
+        // include element
+        current.add(nums[idx]);
+        computeSubsets(nums,idx+1, current);
+
+        // exclude element
+        current.remove(current.size()-1);
+
+        computeSubsets(nums,idx+1,current);
     }
 }
