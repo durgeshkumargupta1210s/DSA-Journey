@@ -1,27 +1,33 @@
-import java.util.*;
-
 class Solution {
     public int minimumTotal(List<List<Integer>> triangle) {
-        if (triangle == null || triangle.size() == 0) {
-            return 0;
-        }
-
         int n = triangle.size();
-        // dp will represent the best sums from current row to bottom
-        int[] dp = new int[n];
+        int[][] dp = new int[n][n];
 
-        // initialize dp with last row values
-        for (int j = 0; j < n; j++) {
-            dp[j] = triangle.get(n - 1).get(j);
+        // Initialize dp with a sentinel value (e.g., Integer.MAX_VALUE or -1)
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE);
         }
 
-        // build dp from bottom row up
-        for (int i = n - 2; i >= 0; i--) {
-            for (int j = 0; j <= i; j++) {
-                dp[j] = triangle.get(i).get(j) + Math.min(dp[j], dp[j + 1]);
-            }
+        return minimumPathSum(0, 0, triangle, dp);
+    }
+
+    private int minimumPathSum(int cr, int cc, List<List<Integer>> triangle, int[][] dp) {
+        // Base case: last row
+        if (cr == triangle.size() - 1) {
+            return triangle.get(cr).get(cc);
         }
 
-        return dp[0];
+        // If already computed, return it
+        if (dp[cr][cc] != Integer.MAX_VALUE) {
+            return dp[cr][cc];
+        }
+
+        // Recursive calls for down and diagonal paths
+        int down = triangle.get(cr).get(cc) + minimumPathSum(cr + 1, cc, triangle, dp);
+        int diagonal = triangle.get(cr).get(cc) + minimumPathSum(cr + 1, cc + 1, triangle, dp);
+
+        // Store and return the minimum
+        dp[cr][cc] = Math.min(down, diagonal);
+        return dp[cr][cc];
     }
 }
