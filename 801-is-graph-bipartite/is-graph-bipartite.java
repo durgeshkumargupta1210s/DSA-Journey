@@ -29,10 +29,7 @@ class Solution {
 							q.add(new BipartitePair(nbrs, rp.dis+1));
 						}
 					}
-					
-					
 				}
-				
 			}
 		return true;
     }
