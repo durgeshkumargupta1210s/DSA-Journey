@@ -3,12 +3,15 @@ class Solution {
         int n=height.length;
         int left=0;
         int right=n-1;
+
         int maxWater=0;
+
         while(left<right){
             int width=right-left;
-            int heigh=Math.min(height[left],height[right]);
-            int currentWater=width*heigh;
-            maxWater=Math.max(maxWater,currentWater);
+            int hei=Math.min(height[left], height[right]);
+            int current=width * hei;
+
+            maxWater=Math.max(maxWater, current);
 
             if(height[left]<height[right]){
                 left++;
@@ -16,9 +19,9 @@ class Solution {
             else{
                 right--;
             }
-
         }
         return maxWater;
+
 
         
     }
