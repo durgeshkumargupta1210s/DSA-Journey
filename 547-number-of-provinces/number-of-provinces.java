@@ -1,42 +1,55 @@
+import java.util.*;
+
 class Solution {
 
-    // Main function to count the number of provinces (connected components)
     public int findCircleNum(int[][] isConnected) {
 
-        // Number of cities (nodes)
-        int row = isConnected.length;
+        int n = isConnected.length;
+        boolean[] visited = new boolean[n];
+        int provinces = 0;
 
-        // This will store the final count of provinces
-        int ans = 0;
+        // Check each city
+        for (int i = 0; i < n; i++) {
 
-        // Visited array to track which cities have already been explored
-        boolean[] visited = new boolean[row];
-
-        // Iterate over each city
-        for (int i = 0; i < row; i++) {
-
-            // If the city is not visited, it starts a new province
+            // If city is not visited, it starts a new province
             if (!visited[i]) {
-                ans++;                      // New province found
-                dfs(isConnected, visited, i); // Explore all connected cities
+                provinces++;
+                BFS(i, isConnected, visited);
             }
         }
 
-        return ans;
+        return provinces;
     }
 
-    // Depth-First Search to visit all cities connected to the current city
-    public void dfs(int[][] grid, boolean[] visited, int node) {
+    // BFS in your exact format
+    public void BFS(int src, int[][] isConnected, boolean[] visited) {
 
-        // Mark the current city as visited
-        visited[node] = true;
+        Queue<Integer> q = new LinkedList<>();
 
-        // Explore all possible connections from this city
-        for (int i = 0; i < grid.length; i++) {
+        // 0. Add source
+        q.add(src);
 
-            // If city i is connected and not yet visited
-            if (!visited[i] && grid[node][i] == 1) {
-                dfs(grid, visited, i); // Recursively visit connected city
+        while (!q.isEmpty()) {
+
+            // 1. Remove
+            int r = q.poll();
+
+            // 2. Ignore if already visited
+            if (visited[r]) {
+                continue;
+            }
+
+            // 3. Mark visited
+            visited[r] = true;
+
+            // 4. Self work
+            // (No specific work needed for province counting)
+
+            // 5. Add unvisited neighbors
+            for (int nbr = 0; nbr < isConnected.length; nbr++) {
+                if (isConnected[r][nbr] == 1 && !visited[nbr]) {
+                    q.add(nbr);
+                }
             }
         }
     }
