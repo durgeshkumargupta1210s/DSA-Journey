@@ -1,27 +1,21 @@
 class Solution {
     public int[] singleNumber(int[] nums) {
-       return singlehu(nums) ;
+        return Single_Number(nums);
+        
     }
-    public static int[] singlehu(int[] nums) {
-		// TODO Auto-generated method stub
-		HashMap<Integer,Integer> map = new HashMap<>();
-		ArrayList<Integer> al = new ArrayList<>();
-		
-		for(int ele : nums) {
-			map.put(ele, map.getOrDefault(ele,0)+1);
-			
+    public static int[] Single_Number(int [] arr) {
+		int xor=0;
+		for(int i=0; i<arr.length; i++) {
+			xor=xor^arr[i];
 		}
-		int ans=0;
-		for(Map.Entry<Integer,Integer> e: map.entrySet()) {
-			 if(e.getValue()==1) {
-				 al.add(e.getKey());
-			 }
+		int mask=(xor & (-1 *xor)); // (xor & (~(xor-1));
+		int a=0;
+		for(int i=0; i<arr.length; i++) {
+			if((mask & arr[i])!=0) {
+				a=a^arr[i];
+			}
 		}
-		int [] arr=new int[al.size()];
-		for(int i=0; i<al.size(); i++ ) {
-			arr[i]=al.get(i);
-		}
-		
-		return arr ;
+		int b=xor^a;
+		return new int[] {a,b};
 	}
 }
