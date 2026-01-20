@@ -1,31 +1,54 @@
 class Solution {
-    public int calPoints(String[] ops) {
-        List<Integer> scores = new ArrayList<>();
-        
-        for (String op : ops) {
-            if (op.equals("+")) {
-                
-                int size = scores.size();
-                int newScore = scores.get(size - 1) + scores.get(size - 2);
-                scores.add(newScore);
-            } else if (op.equals("D")) {
 
-                int lastScore = scores.get(scores.size() - 1);
-                scores.add(lastScore * 2);
-            } else if (op.equals("C")) {
+    // Calculates the final score after performing all operations
+    public int calPoints(String[] operations) {
 
-                scores.remove(scores.size() - 1);
-            } else {
-                
-                scores.add(Integer.parseInt(op));
+        // Stack to store valid round scores
+        Stack<Integer> st = new Stack<>();
+
+        // Process each operation one by one
+        for (String ch : operations) {
+
+            // "+" operation:
+            // Sum of the previous two valid scores
+            if (ch.equals("+")) {
+
+                // Remove last score to access second last
+                int last = st.pop();
+                int secondLast = st.peek();
+
+                // Restore the last score
+                st.push(last);
+
+                // Push sum of last two scores
+                st.push(last + secondLast);
+            }
+
+            // "D" operation:
+            // Double the previous valid score
+            else if (ch.equals("D")) {
+                st.push(2 * st.peek());
+            }
+
+            // "C" operation:
+            // Invalidate and remove the previous valid score
+            else if (ch.equals("C")) {
+                st.pop();
+            }
+
+            // Numeric value:
+            // Push the score directly onto the stack
+            else {
+                st.push(Integer.parseInt(ch));
             }
         }
-    
-        int result = 0;
-        for (int score : scores) {
-            result += score;
+
+        // Calculate the total score by summing all values in the stack
+        int sum = 0;
+        while (!st.isEmpty()) {
+            sum += st.pop();
         }
-        
-        return result;
+
+        return sum;
     }
 }
