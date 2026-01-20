@@ -1,37 +1,62 @@
-import java.util.Stack;
-
 class Solution {
-    public int[] asteroidCollision(int[] asteroids) {
-        Stack<Integer> stack = new Stack<>();
 
-        for (int ast : asteroids) {
+    // This method simulates asteroid collisions and
+    // returns the final state after all collisions
+    public int[] asteroidCollision(int[] ast) {
+
+        // Stack to store asteroids that are still moving
+        // Positive value  -> moving right
+        // Negative value  -> moving left
+        Stack<Integer> st = new Stack<>();
+
+        // Traverse each asteroid
+        for (int i = 0; i < ast.length; i++) {
+
+            int val = ast[i];
+
+            // Flag to check whether the current asteroid is destroyed
             boolean destroyed = false;
 
-            while (!stack.isEmpty() && ast < 0 && stack.peek() > 0) {
-                int top = stack.peek();
+            // Collision occurs only when:
+            // - the asteroid on stack is moving right (positive)
+            // - the current asteroid is moving left (negative)
+            while (!st.isEmpty() && st.peek() > 0 && val < 0) {
 
-                if (top < -ast) {
-                    stack.pop(); // top asteroid explodes, continue checking
-                } else if (top == -ast) {
-                    stack.pop(); // both explode
-                    destroyed = true;
+                // Case 1: Top asteroid is smaller than the incoming one
+                // Top asteroid gets destroyed
+                if (st.peek() < -val) {
+                    st.pop();          // remove smaller asteroid
+                }
+
+                // Case 2: Both asteroids are of equal size
+                // Both get destroyed
+                else if (st.peek() == -val) {
+                    st.pop();          // remove top asteroid
+                    destroyed = true;  // incoming asteroid also destroyed
                     break;
-                } else {
-                    // current asteroid explodes
+                }
+
+                // Case 3: Incoming asteroid is smaller
+                // Incoming asteroid gets destroyed
+                else {
                     destroyed = true;
                     break;
                 }
             }
 
+            // If the current asteroid survives all possible collisions,
+            // push it onto the stack
             if (!destroyed) {
-                stack.push(ast);
+                st.push(val);
             }
         }
 
-        // Convert stack to array
-        int[] result = new int[stack.size()];
-        for (int i = stack.size() - 1; i >= 0; i--) {
-            result[i] = stack.pop();
+        // Convert the remaining asteroids in the stack to result array
+        int[] result = new int[st.size()];
+
+        // Stack pops in reverse order, so fill the array from the end
+        for (int i = result.length - 1; i >= 0; i--) {
+            result[i] = st.pop();
         }
 
         return result;
