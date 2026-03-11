@@ -1,25 +1,36 @@
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        Map<Character, Integer> map=new HashMap<>();
-        int ans=0;
-        int si=0;
 
-        for(int ei=0; ei<s.length(); ei++){
-            char ch=s.charAt(ei);
-            map.put(ch,map.getOrDefault(ch,0)+1);
+        // Set to store unique characters in the current window
+        Set<Character> set = new HashSet<>();
 
-            while(map.get(ch)>1){
-                char startChar = s.charAt(si);
-                map.put(startChar,map.get(startChar)-1);
-                if(map.get(startChar)==0){
-                    map.remove(startChar);
-                }
-                si++;
+        // si (start index) represents the start of the sliding window
+        int si = 0;
+
+        // maxlen stores the length of the longest substring found so far
+        int maxlen = 0;
+
+        // ei (end index) expands the sliding window
+        for(int ei = 0; ei < s.length(); ei++){
+
+            // Current character at the end of the window
+            char ch = s.charAt(ei);
+
+            // If the character already exists in the set,
+            // shrink the window from the start until the duplicate is removed
+            while(set.contains(ch)){
+                set.remove(s.charAt(si)); // remove the starting character
+                si++;                     // move start index forward
             }
-            ans=Math.max(ans,ei-si+1);
 
+            // Add the current character to the set
+            set.add(ch);
+
+            // Update the maximum length of substring without repeating characters
+            maxlen = Math.max(maxlen, ei - si + 1);
         }
-        return ans;
-        
+
+        // Return the maximum length found
+        return maxlen;
     }
 }
