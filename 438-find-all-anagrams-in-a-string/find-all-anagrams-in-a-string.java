@@ -1,56 +1,71 @@
-import java.util.*;
-
 class Solution {
     public List<Integer> findAnagrams(String s, String p) {
+
+        // List to store starting indices of anagrams
         List<Integer> list = new ArrayList<>();
 
-        // Frequency map for string p (pattern we want to match)
-        HashMap<Character,Integer> mapOfP = new HashMap<>();
+        // map1 stores the frequency of characters in string p
+        Map<Character, Integer> map1 = new HashMap<>();
 
-        // Frequency map for the current sliding window in s
-        HashMap<Character,Integer> mapOfPWindow = new HashMap<>();
+        // map2 stores the frequency of characters in the current window of s
+        Map<Character, Integer> map2 = new HashMap<>();
 
-        int k = p.length();   // size of the window = length of p
-        int si = 0;           // left pointer (start index of window)
+        // si represents the start index of the sliding window
+        int si = 0;
 
-        // Build frequency map of characters in p
-        for (char ch : p.toCharArray()) {
-            mapOfP.put(ch, mapOfP.getOrDefault(ch, 0) + 1);
+        // Window size will always be equal to length of p
+        int k = p.length();
+
+        // Build frequency map for string p
+        for(int i = 0; i < k; i++){
+            char ch = p.charAt(i);
+            map1.put(ch, map1.getOrDefault(ch, 0) + 1);
         }
 
-        // Build the frequency map for the first window of length k in s
-        for (int i = 0; i < k && i < s.length(); i++) {
+        // Build the first window of size k for string s
+        for(int i = 0; i < k && i<s.length(); i++){
             char ch = s.charAt(i);
-            mapOfPWindow.put(ch, mapOfPWindow.getOrDefault(ch, 0) + 1);
+            map2.put(ch, map2.getOrDefault(ch, 0) + 1);
         }
 
-        // If the first window matches, add starting index 0
-        if (mapOfP.equals(mapOfPWindow)) list.add(si);
+        // If the first window matches the frequency map of p,
+        // then index 0 is a valid anagram starting position
+        if(map1.equals(map2)){
+            list.add(si);
+        }
 
-        // Slide the window across string s
-        for (int ei = k; ei < s.length(); ei++) {
-            // Add new character entering the window
+        // Start sliding the window
+        for(int ei = k; ei < s.length(); ei++){
+
+            // Add the new character entering the window
             char ch = s.charAt(ei);
-            mapOfPWindow.put(ch, mapOfPWindow.getOrDefault(ch, 0) + 1);
+            map2.put(ch, map2.getOrDefault(ch, 0) + 1);
 
-            // Shrink the window if its size exceeds k
-            while (ei - si + 1 > k) {
-                char lastChar = s.charAt(si);
-                mapOfPWindow.put(lastChar, mapOfPWindow.get(lastChar) - 1);
+            // Maintain the window size equal to k
+            while(ei - si + 1 > k){
 
-                // Remove char from map if its count becomes zero
-                if (mapOfPWindow.get(lastChar) == 0) {
-                    mapOfPWindow.remove(lastChar);
+                // Character leaving the window
+                char ch1 = s.charAt(si);
+
+                // Decrease its frequency
+                map2.put(ch1, map2.get(ch1) - 1);
+
+                // Remove it from map if frequency becomes zero
+                if(map2.get(ch1) == 0){
+                    map2.remove(ch1);
                 }
 
-                // Move window start forward
+                // Move the start pointer forward
                 si++;
             }
 
-            // If current window matches the frequency map of p, record start index
-            if (mapOfP.equals(mapOfPWindow)) list.add(si);
+            // If the frequency maps match, we found an anagram
+            if(map1.equals(map2)){
+                list.add(si);
+            }
         }
 
+        // Return all starting indices of anagrams
         return list;
     }
 }
