@@ -1,32 +1,52 @@
-public class Solution {
+class Solution {
     public int myAtoi(String s) {
-        int i=0; 
-        int n=s.length();
 
-        while(i<n && s.charAt(i)==' '){
+        // Get length of the string
+        int n = s.length();
+
+        // Pointer to traverse the string
+        int i = 0;
+
+        // Step 1: Ignore leading whitespaces
+        while (i < n && s.charAt(i) == ' ') {
             i++;
         }
 
-        int sign=1;
-        if(i<n && (s.charAt(i)=='+' || s.charAt(i)=='-') ){
-            if(s.charAt(i)=='-'){
-                sign=-1;
+        // Step 2: Determine the sign of the number
+        // Default sign is positive
+        int sign = 1;
+
+        // If '+' or '-' is present, update sign
+        if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+            if (s.charAt(i) == '-') {
+                sign = -1;  // Negative number
             }
-            i++;
+            i++; // Move to next character
         }
-        int result=0;
 
-        while(i<n && Character.isDigit(s.charAt(i))){
-            int digit=s.charAt(i)-'0';
+        // Step 3: Convert digits to integer
+        int result = 0;
 
-            if(result>(Integer.MAX_VALUE-digit)/10){
-                return sign==1?Integer.MAX_VALUE :Integer.MIN_VALUE;
+        // Process characters while they are digits
+        while (i < n && Character.isDigit(s.charAt(i))) {
+
+            // Convert character digit to integer value
+            int digit = s.charAt(i) - '0';
+
+            // Step 4: Check for overflow before multiplying by 10
+            // If result exceeds Integer.MAX_VALUE boundary
+            if (result > (Integer.MAX_VALUE - digit) / 10) {
+                return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
             }
 
-            result=result*10+digit;
+            // Update result by shifting digits left and adding current digit
+            result = result * 10 + digit;
+
+            // Move to next character
             i++;
         }
-        return result*sign;
 
+        // Step 5: Apply the sign and return final result
+        return result * sign;
     }
 }
