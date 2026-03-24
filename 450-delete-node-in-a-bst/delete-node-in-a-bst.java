@@ -13,37 +13,88 @@
  *     }
  * }
  */
-class Solution {
-    public TreeNode deleteNode(TreeNode root, int key) {
-            if (root == null) {
-				return null;
-			}
-			if (root.val < key) {
-				root.right = deleteNode(root.right, key);
-			} else if (root.val > key) {
-				root.left = deleteNode(root.left, key);
-			}
-            else {
-				// 1 or 0 child
-				if (root.left == null) {
-					return root.right;
-				} else if (root.right == null) {
-					return root.left;
-				}
-                else {
-					int max=max(root.left);
-					root.left=deleteNode(root.left,max);
-					root.val=max;
-				}
-			}
-			return root;
-	} 
 
-    public int max(TreeNode root) {
-			if(root==null) {
-				return Integer.MIN_VALUE;
-			}
-			int m=max(root.right);
-			return Math.max(m, root.val);
-	}
+class Solution {
+
+    /**
+     * Deletes a node with given key from BST and returns updated root.
+     */
+    public TreeNode deleteNode(TreeNode root, int key) {
+
+        /**
+         * Base Case:
+         * If tree is empty → nothing to delete
+         */
+        if (root == null) {
+            return null;
+        }
+
+        /**
+         * Step 1: Traverse the tree to find the node
+         */
+        if (key > root.val) {
+            // Move to right subtree
+            root.right = deleteNode(root.right, key);
+        } 
+        else if (key < root.val) {
+            // Move to left subtree
+            root.left = deleteNode(root.left, key);
+        }
+
+        /**
+         * Step 2: Node found → handle deletion
+         */
+        else {
+
+            /**
+             * Case 1: Node has NO left child
+             * → Replace node with right child
+             */
+            if (root.left == null) {
+                return root.right;
+            }
+
+            /**
+             * Case 2: Node has NO right child
+             * → Replace node with left child
+             */
+            if (root.right == null) {
+                return root.left;
+            }
+
+            /**
+             * Case 3: Node has TWO children
+             * 
+             * Strategy:
+             * - Find inorder successor (smallest in right subtree)
+             * - Replace current node value with successor value
+             * - Delete successor from right subtree
+             */
+            TreeNode rightmin = findmin(root.right);
+
+            // Replace current node value
+            root.val = rightmin.val;
+
+            // Delete duplicate node from right subtree
+            root.right = deleteNode(root.right, rightmin.val);
+        }
+
+        /**
+         * Return updated root after deletion
+         */
+        return root;
+    }
+
+    /**
+     * Helper function to find minimum node
+     * (leftmost node in BST)
+     */
+    public TreeNode findmin(TreeNode root) {
+
+        while (root.left != null) {
+            root = root.left;
+        }
+
+        return root;
+    }
 }
