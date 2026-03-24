@@ -10,21 +10,26 @@
 
 class Solution {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null) return null;
-
-        int current = root.val;
-
-        // If both p and q are smaller → LCA lies in left subtree
-        if (current > p.val && current > q.val) {
-            return lowestCommonAncestor(root.left, p, q);
+        if(root==null || p==root || q==root){
+            return root;
         }
 
-        // If both p and q are greater → LCA lies in right subtree
-        if (current < p.val && current < q.val) {
-            return lowestCommonAncestor(root.right, p, q);
+        TreeNode left=lowestCommonAncestor(root.left,p,q);
+        TreeNode right=lowestCommonAncestor(root.right,p,q);
+
+        if(left!=null && right!=null){
+            return root;
         }
 
-        // Otherwise, root is the split point → LCA found
+        if(left==null){
+            return right;
+        }
+
+        if(right==null){
+            return left;
+        }
+
         return root;
+
     }
 }
