@@ -1,31 +1,35 @@
 class Solution {
     public int numIslands(char[][] grid) {
-        int row=grid.length;
-        int col=grid[0].length;
-        boolean [][]visited= new boolean[row][col];
+        int m=grid.length;
+        int n=grid[0].length;
 
-        int ans=0;
-        for(int i=0; i<row; i++){
-            for(int j=0; j<col; j++){
+        boolean[][] visited=new boolean[m][n];
+        int count=0;
+
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
                 if(grid[i][j]=='1' && !visited[i][j]){
-                   ans++;
-                   findComponent(grid, visited, i, j);
+                    count++;
+                    dfs(grid,i,j,visited);
+                    
                 }
             }
         }
-        return ans;
-        
+        return count;  
     }
 
-    public void findComponent(char [][] grid, boolean [][] visited, int row, int col){
-        if(row<0 || col<0 || row>=grid.length || col>=grid[0].length|| grid[row][col]=='0' || visited[row][col]){
-            return;
+    public void dfs(char [][] grid, int sr,int sc,boolean[][] visited){
+        if(sr<0 || sc<0 || sr>=grid.length || sc>=grid[0].length || visited[sr][sc] || grid[sr][sc]=='0'){
+            return ;
         }
 
-        visited[row][col]=true;
-        findComponent(grid, visited, row+1, col);
-        findComponent(grid, visited, row-1, col);
-        findComponent(grid, visited, row, col+1);
-        findComponent(grid, visited, row, col-1);
+        visited[sr][sc]=true;
+
+        dfs(grid,sr+1,sc,visited);
+        dfs(grid,sr-1,sc,visited);
+        dfs(grid,sr,sc+1,visited);
+        dfs(grid,sr,sc-1,visited);  
+
+
     }
 }
