@@ -1,56 +1,55 @@
-import java.util.*;
-
 class Solution {
 
+    // Function to count number of provinces (connected components)
     public int findCircleNum(int[][] isConnected) {
 
         int n = isConnected.length;
-        boolean[] visited = new boolean[n];
-        int provinces = 0;
 
-        // Check each city
-        for (int i = 0; i < n; i++) {
-
-            // If city is not visited, it starts a new province
-            if (!visited[i]) {
-                provinces++;
-                BFS(i, isConnected, visited);
-            }
-        }
-
-        return provinces;
-    }
-
-    // BFS in your exact format
-    public void BFS(int src, int[][] isConnected, boolean[] visited) {
-
+        // Queue for BFS traversal
         Queue<Integer> q = new LinkedList<>();
 
-        // 0. Add source
-        q.add(src);
+        // Visited set to track explored cities
+        Set<Integer> visited = new HashSet<>();
 
-        while (!q.isEmpty()) {
+        int count = 0;  // number of provinces
 
-            // 1. Remove
-            int r = q.poll();
+        // Traverse all cities
+        for(int i = 0; i < n; i++){
 
-            // 2. Ignore if already visited
-            if (visited[r]) {
+            // If already visited, skip
+            if(visited.contains(i)){
                 continue;
             }
 
-            // 3. Mark visited
-            visited[r] = true;
+            // New province found
+            count++;
 
-            // 4. Self work
-            // (No specific work needed for province counting)
+            // Start BFS from this city
+            q.add(i);
 
-            // 5. Add unvisited neighbors
-            for (int nbr = 0; nbr < isConnected.length; nbr++) {
-                if (isConnected[r][nbr] == 1 && !visited[nbr]) {
-                    q.add(nbr);
+            while(!q.isEmpty()){
+
+                int rv = q.poll();   // remove current city
+
+                // If already visited, skip processing
+                if(visited.contains(rv)){
+                    continue;
+                }
+
+                // Mark as visited
+                visited.add(rv);
+
+                // Traverse all neighbors (adjacency matrix row)
+                for(int nbr = 0; nbr < n; nbr++){
+
+                    // If connected and not visited, add to queue
+                    if(isConnected[rv][nbr] == 1 && !visited.contains(nbr)){
+                        q.add(nbr);
+                    }
                 }
             }
         }
+
+        return count;
     }
 }
