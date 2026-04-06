@@ -1,68 +1,85 @@
 class Solution {
 
-    public double maxProbability(int n, int[][] edges, double[] succProb,
-                                 int start_node, int end_node) {
+    // Pair class to store (vertex, probability so far)
+    class Pair {
+        int vrtx;
+        double prob;
 
-        // Step 1: Build adjacency list
-        List<List<Pair>> graph = new ArrayList<>();
+        public Pair(int vrtx, double prob) {
+            this.vrtx = vrtx;
+            this.prob = prob;
+        }
+    }
+
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
+
+        // Step 1: Build graph using adjacency map
+        // map[u] -> {v : probability}
+        HashMap<Integer, HashMap<Integer, Double>> map = new HashMap<>();
+
+        // Initialize empty adjacency list for each node
         for (int i = 0; i < n; i++) {
-            graph.add(new ArrayList<>());
+            map.put(i, new HashMap<>());
         }
 
+        // Populate graph (undirected)
         for (int i = 0; i < edges.length; i++) {
             int u = edges[i][0];
             int v = edges[i][1];
-            double prob = succProb[i];
+            double cost = succProb[i];
 
-            graph.get(u).add(new Pair(v, prob));
-            graph.get(v).add(new Pair(u, prob));
+            map.get(u).put(v, cost);
+            map.get(v).put(u, cost);
         }
 
-        // Step 2: Max probability array
-        double[] maxProb = new double[n];
-        maxProb[start_node] = 1.0;
-
-        // Step 3: Max Heap (higher probability first)
+        // Step 2: Max Heap (Priority Queue)
+        // We want to process node with MAX probability first
         PriorityQueue<Pair> pq =
-                new PriorityQueue<>((a, b) -> Double.compare(b.prob, a.prob));
+            new PriorityQueue<>((a, b) -> Double.compare(b.prob, a.prob));
 
-        pq.offer(new Pair(start_node, 1.0));
+        // Step 3: Distance array to store max probability to reach each node
+        double[] dist = new double[n];
 
-        // Step 4: Dijkstra
+        // Start node has probability = 1
+        dist[start_node] = 1.0;
+
+        // Push start node into PQ
+        pq.add(new Pair(start_node, 1.0));
+
+        // Step 4: Modified Dijkstra's Algorithm
         while (!pq.isEmpty()) {
+
             Pair curr = pq.poll();
-            int node = curr.node;
+            int node = curr.vrtx;
             double prob = curr.prob;
 
-            // Early stop
+            // Early exit: first time reaching end_node gives max probability
             if (node == end_node) {
                 return prob;
             }
 
-            // Ignore outdated entries
-            if (prob < maxProb[node]) continue;
+            // Skip if we already have a better probability recorded
+            if (prob < dist[node]) {
+                continue;
+            }
 
-            for (Pair next : graph.get(node)) {
-                double newProb = prob * next.prob;
+            // Explore neighbors
+            for (int nbrs : map.get(node).keySet()) {
 
-                if (newProb > maxProb[next.node]) {
-                    maxProb[next.node] = newProb;
-                    pq.offer(new Pair(next.node, newProb));
+                // New probability = current * edge probability
+                double newprob = prob * map.get(node).get(nbrs);
+
+                // Relaxation step (maximize probability)
+                if (newprob > dist[nbrs]) {
+                    dist[nbrs] = newprob;
+
+                    // Push updated state into PQ
+                    pq.add(new Pair(nbrs, newprob));
                 }
             }
         }
 
-        return 0.0;
-    }
-
-    // Helper class
-    static class Pair {
-        int node;
-        double prob;
-
-        Pair(int node, double prob) {
-            this.node = node;
-            this.prob = prob;
-        }
+        // If end node is not reachable
+        return 0;
     }
 }
