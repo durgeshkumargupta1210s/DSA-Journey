@@ -1,117 +1,95 @@
 class Solution {
 
-    // Custom class to represent a state in the grid
+    // State representation for BFS
     class Pair {
-        int r;     // current row
-        int c;     // current column
-        int k;     // remaining obstacle eliminations
-        int step;  // steps taken to reach this cell
+        int r; // row
+        int c; // column
+        int k; // remaining obstacle eliminations
 
-        public Pair(int r, int c, int k, int step) {
+        public Pair(int r, int c, int k) {
             this.r = r;
             this.c = c;
             this.k = k;
-            this.step = step;
         }
     }
 
     public int shortestPath(int[][] grid, int k) {
 
+        Queue<Pair> q = new LinkedList<>();
+
         int m = grid.length;
         int n = grid[0].length;
 
-        // Min-heap (Dijkstra style) based on minimum steps
-        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.step - b.step);
-
-        // Start from (0,0) with k eliminations and 0 steps
-        pq.add(new Pair(0, 0, k, 0));
-
         /*
-         * 3D distance array:
-         * dist[r][c][k] = minimum steps required to reach cell (r,c)
-         * with k eliminations remaining
+         * 3D visited array:
+         * visited[r][c][k] = have we visited cell (r,c)
+         * with k eliminations remaining?
          *
          * WHY 3D?
-         * Because reaching same cell with different k values is different state.
-         * Example:
-         * (r,c, k=2) is better than (r,c, k=0)
+         * Because reaching (r,c) with different k values
+         * represents different states.
          */
-        int[][][] dist = new int[m][n][k + 1];
+        boolean[][][] visited = new boolean[m][n][k + 1];
 
-        // Initialize all distances with infinity
-        for (int[][] layer : dist) {
-            for (int[] row : layer) {
-                Arrays.fill(row, Integer.MAX_VALUE);
-            }
-        }
+        // Start from (0,0) with k eliminations
+        q.add(new Pair(0, 0, k));
+        visited[0][0][k] = true;
 
-        // Starting point
-        dist[0][0][k] = 0;
+        int step = -1; // number of steps taken
 
-        // 4 possible movement directions
+        // 4-directional movement
         int[][] directions = {{0,1}, {0,-1}, {1,0}, {-1,0}};
 
-        while (!pq.isEmpty()) {
+        // Standard BFS traversal (level-wise)
+        while (!q.isEmpty()) {
 
-            Pair current = pq.poll();
+            int size = q.size();
+            step++; // each level = one step
 
-            int r = current.r;
-            int c = current.c;
-            int kc = current.k;     // remaining eliminations
-            int step = current.step;
+            // Process all nodes at current level
+            for (int i = 0; i < size; i++) {
 
-            // If we reached destination → return steps
-            if (r == m - 1 && c == n - 1) {
-                return step;
-            }
+                Pair curr = q.poll();
 
-            /*
-             * Important pruning:
-             * If we already found a better way to reach this state,
-             * skip this one (classic Dijkstra optimization)
-             */
-            if (step > dist[r][c][kc]) continue;
+                int r = curr.r;
+                int c = curr.c;
+                int remaining = curr.k;
 
-            // Explore all 4 directions
-            for (int[] dir : directions) {
+                // If destination reached → return steps
+                if (r == m - 1 && c == n - 1) {
+                    return step;
+                }
 
-                int nr = r + dir[0];
-                int nc = c + dir[1];
+                // Explore all 4 directions
+                for (int[] dir : directions) {
 
-                int newStep = step + 1;
+                    int nr = r + dir[0];
+                    int nc = c + dir[1];
 
-                // Boundary check
-                if (nr >= 0 && nc >= 0 && nr < m && nc < n) {
+                    // Boundary check
+                    if (nr >= 0 && nc >= 0 && nr < m && nc < n) {
 
-                    // CASE 1: Empty cell (no obstacle)
-                    if (grid[nr][nc] == 0) {
+                        // CASE 1: Empty cell (no obstacle)
+                        if (grid[nr][nc] == 0 && !visited[nr][nc][remaining]) {
 
-                        /*
-                         * Same k (no elimination used)
-                         * Relaxation condition
-                         */
-                        if (newStep < dist[nr][nc][kc]) {
-                            dist[nr][nc][kc] = newStep;
-                            pq.add(new Pair(nr, nc, kc, newStep));
+                            visited[nr][nc][remaining] = true;
+                            q.add(new Pair(nr, nc, remaining));
                         }
-                    }
 
-                    // CASE 2: Obstacle cell and we can eliminate it
-                    else if (grid[nr][nc] == 1 && kc > 0) {
+                        // CASE 2: Obstacle cell and we can eliminate it
+                        else if (grid[nr][nc] == 1 && remaining > 0
+                                 && !visited[nr][nc][remaining - 1]) {
 
-                        /*
-                         * We use one elimination → k decreases by 1
-                         */
-                        if (newStep < dist[nr][nc][kc - 1]) {
-                            dist[nr][nc][kc - 1] = newStep;
-                            pq.add(new Pair(nr, nc, kc - 1, newStep));
+                            // Use one elimination → k decreases
+                            visited[nr][nc][remaining - 1] = true;
+                            q.add(new Pair(nr, nc, remaining - 1));
                         }
                     }
                 }
             }
         }
 
-        // If destination is not reachable
+        // If destination not reachable
         return -1;
     }
 }
