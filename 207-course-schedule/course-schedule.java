@@ -1,49 +1,62 @@
-import java.util.*;
-
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
 
-        // Step 1: Create adjacency list
-        List<List<Integer>> graph = new ArrayList<>();
-        for (int i = 0; i < numCourses; i++) {
-            graph.add(new ArrayList<>());
+        // Adjacency list to represent the graph
+        // list.get(u) -> contains all courses dependent on course u
+        List<List<Integer>> list = new ArrayList<>();
+
+        // Initialize adjacency list for all courses
+        for(int i = 0; i < numCourses; i++){
+            list.add(new ArrayList<>());
         }
 
-        // Step 2: In-degree array
-        int[] inDegree = new int[numCourses];
+        // indegree[i] = number of prerequisites required for course i
+        int[] indegree = new int[numCourses];
 
-        // Step 3: Build graph and in-degree
-        for (int[] pre : prerequisites) {
-            int course = pre[0];
-            int prereq = pre[1];
-            graph.get(prereq).add(course);
-            inDegree[course]++;
+        // Build the graph
+        // prerequisites[i] = [a, b] means: to take course 'a', you must first take 'b'
+        for(int[] pre : prerequisites){
+            int a = pre[0]; // course to take
+            int b = pre[1]; // prerequisite course
+
+            // Directed edge: b → a
+            list.get(b).add(a);
+
+            // Increase indegree of 'a' (since it depends on 'b')
+            indegree[a]++;
         }
 
-        // Step 4: Queue for courses with no prerequisites
-        Queue<Integer> queue = new LinkedList<>();
-        for (int i = 0; i < numCourses; i++) {
-            if (inDegree[i] == 0) {
-                queue.offer(i);
+        // Queue for BFS (Kahn’s Algorithm - Topological Sort)
+        Queue<Integer> q = new LinkedList<>();
+
+        // Add all courses with no prerequisites (indegree = 0)
+        for(int i = 0; i < indegree.length; i++){
+            if(indegree[i] == 0){
+                q.add(i);
             }
         }
 
-        // Step 5: Process courses
-        int completedCourses = 0;
+        // Count of courses we can complete
+        int count = 0;
 
-        while (!queue.isEmpty()) {
-            int current = queue.poll();
-            completedCourses++;
+        // Process nodes using BFS
+        while(!q.isEmpty()){
+            int rv = q.poll(); // remove course with no remaining prerequisites
+            count++;
 
-            for (int next : graph.get(current)) {
-                inDegree[next]--;
-                if (inDegree[next] == 0) {
-                    queue.offer(next);
+            // Visit all dependent courses (neighbors)
+            for(int nbrs : list.get(rv)){
+                indegree[nbrs]--; // remove dependency
+
+                // If no prerequisites left, add to queue
+                if(indegree[nbrs] == 0){
+                    q.add(nbrs);
                 }
             }
         }
 
-        // Step 6: Check if all courses are completed
-        return completedCourses == numCourses;
+        // If we were able to process all courses → no cycle exists
+        // Otherwise, cycle is present → cannot finish all courses
+        return count == numCourses;
     }
 }
