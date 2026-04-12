@@ -1,50 +1,68 @@
 class Solution {
-    List<List<Integer>> list;
     public boolean isBipartite(int[][] graph) {
-        list=new ArrayList<>();
-        int n=graph.length;
+        
+        // Number of nodes in graph
+        int n = graph.length;
 
-        for(int i=0; i<n; i++ ){
+        // Convert given graph (array format) into adjacency list
+        // This helps in easier traversal
+        List<List<Integer>> list = new ArrayList<>();
+        for(int i = 0; i < n; i++){
             list.add(new ArrayList<>());
         }
 
-        for(int i=0; i<graph.length; i++){
-            int u=i;
-            for(int j=0; j<graph[i].length; j++){
-                int v=graph[i][j];
-                list.get(u).add(v);
-                list.get(v).add(u);
-
+        // Building undirected graph
+        // NOTE: Given graph is already undirected in LeetCode,
+        // but here we are explicitly adding both directions
+        for(int i = 0; i < n; i++){
+            for(int ele : graph[i]){
+                list.get(i).add(ele);      // edge i -> ele
+                list.get(ele).add(i);      // edge ele -> i
             }
         }
 
-        
-        int [] color=new int[n+1];
-        Arrays.fill(color,-1);
+        // Color array:
+        // -1 -> not colored
+        //  0 -> color A
+        //  1 -> color B
+        int[] color = new int[n + 1];
+        Arrays.fill(color, -1);
 
-        for(int i=0; i<n; i++){
-            if(color[i]==-1){
-                Queue<Integer> q=new LinkedList<>();
+        // Traverse all components (important for disconnected graph)
+        for(int i = 0; i < n; i++){
+
+            // If node is not colored, start BFS from it
+            if(color[i] == -1){
+
+                Queue<Integer> q = new LinkedList<>();
                 q.add(i);
-                color[i]=0;
 
+                // Assign initial color
+                color[i] = 0;
+
+                // BFS traversal
                 while(!q.isEmpty()){
-                    int node=q.poll();
+                    int rv = q.poll(); // remove vertex
 
-                    for(int nbrs : list.get(node)){
-                         
-                         if(color[nbrs]==color[node]){
+                    // Traverse all neighbors
+                    for(int nbrs : list.get(rv)){
+
+                        // Case 1: If neighbor has same color → NOT bipartite
+                        if(color[rv] == color[nbrs]){
                             return false;
-                         }
+                        }
 
-                         if(color[nbrs]==-1){
-                            color[nbrs]=1-color[node];
+                        // Case 2: If neighbor is not colored → assign opposite color
+                        else if(color[nbrs] == -1){
+                            color[nbrs] = 1 - color[rv]; // alternate color
                             q.add(nbrs);
-                         }
+                        }
                     }
                 }
             }
         }
-        return true;
+
+        // If no conflict found, graph is bipartite
+        return true; 
     }
 }
