@@ -1,35 +1,54 @@
 class Solution {
-    public int eraseOverlapIntervals(int[][] arr) {
-        int n = arr.length;
+    public int eraseOverlapIntervals(int[][] intervals) {
 
-        if (n == 0) return 0;
+        int n = intervals.length;
 
-        // Sort by start time, if equal then by end
-        Arrays.sort(arr, (a, b) -> {
-            if (a[0] == b[0]) return Integer.compare(a[1], b[1]);
+        // Step 1: Sort intervals based on start time
+        // If start times are equal, sort by end time
+        Arrays.sort(intervals, (a, b) -> {
+            if (a[0] == b[0]) {
+                return Integer.compare(a[1], b[1]);
+            }
             return Integer.compare(a[0], b[0]);
         });
 
-        int[] prev = arr[0];
+        // Step 2: Initialize 'prev' as the first interval
+        int[] prev = intervals[0];
+
+        // This will store the number of intervals we need to remove
         int count = 0;
 
+        // Step 3: Traverse through remaining intervals
         for (int i = 1; i < n; i++) {
-            int currStart = arr[i][0];
-            int currEnd = arr[i][1];
+
+            int currStart = intervals[i][0];
+            int currEnd = intervals[i][1];
+
+            int prevStart = prev[0];
             int prevEnd = prev[1];
 
+            // Step 4: Check if current interval overlaps with previous
             if (currStart < prevEnd) {
-                // Overlap → remove one interval
+
+                // Overlap found → we need to remove one interval
                 count++;
-                // Keep the one with smaller end (greedy choice)
+
+                // Greedy choice:
+                // Keep the interval with smaller end time
+                // because it leaves more space for future intervals
                 if (currEnd < prevEnd) {
-                    prev = arr[i];
+                    prev = intervals[i];
                 }
+
+                // else → keep prev as it is (it has smaller end)
+
             } else {
                 // No overlap → move forward
-                prev = arr[i];
+                prev = intervals[i];
             }
         }
+
+        // Step 5: Return total intervals removed
         return count;
     }
 }
