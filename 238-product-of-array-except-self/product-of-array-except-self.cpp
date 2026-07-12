@@ -2,35 +2,23 @@ class Solution {
 public:
     vector<int> productExceptSelf(vector<int>& nums) {
 
-        int zeroCount = 0;
-        long long product = 1;
+        int n = nums.size();
 
-        // Product of all non-zero elements
-        for (int x : nums) {
-            if (x == 0)
-                zeroCount++;
-            else
-                product *= x;
+        vector<int> left(n);
+        vector<int> right(n);
+
+        left[0] = 1;
+        for (int i = 1; i < n; i++) {
+            left[i] = left[i - 1] * nums[i - 1];
         }
 
-        for (int i = 0; i < nums.size(); i++) {
+        right[n - 1] = 1;
+        for (int i = n - 2; i >= 0; i--) {
+            right[i] = right[i + 1] * nums[i + 1];
+        }
 
-            if (zeroCount > 1) {
-                nums[i] = 0;
-            }
-            else if (zeroCount == 1) {
-
-                if (nums[i] == 0)
-                    nums[i] = product;
-                else
-                    nums[i] = 0;
-
-            }
-            else {
-
-                nums[i] = product / nums[i];
-
-            }
+        for (int i = 0; i < n; i++) {
+            nums[i] = left[i] * right[i];
         }
 
         return nums;
