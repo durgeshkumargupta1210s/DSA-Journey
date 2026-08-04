@@ -1,20 +1,39 @@
 class Solution {
-    static final String[] s = { "Bob", "Tie", "Alice" };
-
-    public String stoneGameIII(int[] A) {
-        int n = A.length;
-        int[] dp = { 0, 0, 0, 0 };
-
-        for (int i = n - 1; i >= 0; i--) {
-            dp[i & 3] = Integer.MIN_VALUE;
-            int sum = 0;
-
-            for (int j = 1; j <= 3 && i + j <= n; j++) {
-                sum += A[i + j - 1];
-                dp[i & 3] = Math.max(dp[i & 3], sum - dp[(i + j) & 3]);
-            }
+    public String stoneGameIII(int[] stoneValue) {
+        int [] dp=new int[stoneValue.length];
+        Arrays.fill(dp,-1);
+        int diff=solve(stoneValue,0, dp);
+        if(diff>0){
+            return "Alice";
+        }
+        else if(diff<0){
+            return "Bob";
+        }
+        else{
+            return "Tie";
+        }
+        
+        
+    }
+    public static int solve(int [] stone, int idx, int [] dp){
+        if(idx>=stone.length){
+            return 0;
+        }
+        if(dp[idx]!=-1){
+            return dp[idx];
         }
 
-        return s[Integer.signum(dp[0]) + 1];
+        int result=Integer.MIN_VALUE;
+
+        result=Math.max(result,stone[idx]-solve(stone,idx+1, dp));
+
+        if(idx+1<stone.length){
+            result=Math.max(result,stone[idx]+stone[idx+1]-solve(stone,idx+2, dp));
+        }
+
+        if(idx+2<stone.length){
+            result=Math.max(result,stone[idx]+stone[idx+1]+stone[idx+2]-solve(stone,idx+3, dp));
+        }
+        return dp[idx]= result;
     }
 }
