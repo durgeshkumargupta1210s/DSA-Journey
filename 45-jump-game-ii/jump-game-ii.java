@@ -1,34 +1,32 @@
 class Solution {
     public int jump(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, -1);
+        return solve(nums, 0, 0, dp);
+    }
 
-        // jumps → number of jumps taken to reach the end
-        int jumps = 0;
+    public static int solve(int[] nums, int idx, int jumps, int[] dp) {
 
-        // end → end of current range (boundary of current jump)
-        int end = 0;
+        if (idx >= nums.length - 1) {
+            return jumps;
+        }
 
-        // farthest → farthest index we can reach within current range
-        int farthest = 0;
+        if (dp[idx] != -1) {
+            return dp[idx] + jumps;
+        }
 
-        // We iterate till n-1 because once we reach last index,
-        // no need to jump further
-        for (int i = 0; i < nums.length - 1; i++) {
+        int result = Integer.MAX_VALUE;
 
-            // From index i, update the farthest we can reach
-            farthest = Math.max(farthest, i + nums[i]);
+        for (int i = 1; i <= nums[idx]; i++) {
 
-            // If we have reached the end of current jump range
-            if (i == end) {
-
-                // We must take a jump
-                jumps++;
-
-                // Update the new range boundary for next jump
-                end = farthest;
+            if (idx + i < nums.length) {
+                result = Math.min(result,
+                        solve(nums, idx + i, jumps + 1, dp));
             }
         }
 
-        // Return total jumps needed to reach last index
-        return jumps;
+        dp[idx] = result - jumps;
+
+        return result;
     }
 }
