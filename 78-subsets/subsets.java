@@ -1,23 +1,18 @@
 class Solution {
-    List<List<Integer>> result=new ArrayList<>();
+    static List<List<Integer>>result=new ArrayList<>();
     public List<List<Integer>> subsets(int[] nums) {
-        List<Integer> current=new ArrayList<>();
-        computeSubsets(nums,0, current);
+        result.clear();
+        solve(nums,0,new ArrayList<>());
         return result;
     }
-    public void computeSubsets(int [] nums,int idx, List<Integer>current){
+    public static void solve(int [] nums,int idx,List<Integer> curr){
         if(idx==nums.length){
-            result.add(new ArrayList<>(current));
+            result.add(new ArrayList<>(curr));
             return;
         }
-
-        // include element
-        current.add(nums[idx]);
-        computeSubsets(nums,idx+1, current);
-
-        // exclude element
-        current.remove(current.size()-1);
-
-        computeSubsets(nums,idx+1,current);
+        solve(nums,idx+1,curr);
+        curr.add(nums[idx]);
+        solve(nums,idx+1,curr);
+        curr.remove(curr.size()-1);
     }
 }
