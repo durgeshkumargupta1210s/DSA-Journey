@@ -1,25 +1,22 @@
-import java.util.*;
-
 class Solution {
+   
     public List<List<Integer>> subsetsWithDup(int[] nums) {
-        Arrays.sort(nums); // Sorting helps avoid duplicates in the set
-        HashSet<List<Integer>> set = new HashSet<>();
-        subset(nums, 0, new ArrayList<>(), set);
-        return new ArrayList<>(set); // Convert HashSet to List
-    }
+        Arrays.sort(nums);
 
-    public void subset(int[] nums, int idx, ArrayList<Integer> current, HashSet<List<Integer>> set) {
-        if (idx == nums.length) {
-            set.add(new ArrayList<>(current)); // Add a copy to set
+        HashSet<List<Integer>> set=new HashSet<>();
+        solve(nums,0,set,new ArrayList<>());
+        return new ArrayList<>(set);
+        
+    }
+    public static void solve(int [] nums, int idx, HashSet<List<Integer>> set, List<Integer> curr){
+        if(idx==nums.length){
+            set.add(new ArrayList<>(curr));
             return;
         }
 
-        // Include nums[idx]
-        current.add(nums[idx]);
-        subset(nums, idx + 1, current, set);
-
-        // Exclude nums[idx]
-        current.remove(current.size() - 1);
-        subset(nums, idx + 1, current, set);
+        solve(nums,idx+1,set,curr);
+        curr.add(nums[idx]);
+        solve(nums,idx+1, set, curr);
+        curr.remove(curr.size()-1);
     }
 }
