@@ -1,27 +1,25 @@
 class Solution {
-
-    List<String> list = new ArrayList<>();
-
+    static List<String> list;
     public List<String> generateParenthesis(int n) {
-        generate(n, "", 0, 0);
+        list=new ArrayList<>();
+        solve(n,0,0,"");
         return list;
+        
     }
-
-    public void generate(int n, String ans, int open, int close) {
-
-        if (open == n && close == n) {
+    public static void solve(int n, int open , int closed, String ans){
+        if(open==n && closed==n){
             list.add(ans);
             return;
         }
 
-        // Add '(' only if we still have some left
-        if (open < n) {
-            generate(n, ans + "(", open + 1, close);
+        if(open<n){
+            solve(n,open+1,closed,ans+"(");
         }
 
-        // Add ')' only if it won't make the string invalid
-        if (close < open) {
-            generate(n, ans + ")", open, close + 1);
+        if(closed<open){
+            solve(n,open,closed+1,ans+")");
         }
+
+
     }
 }
