@@ -1,29 +1,25 @@
 class Solution {
-    List<List<Integer>> result=new ArrayList<>();
+    static List<List<Integer>>list;
     public List<List<Integer>> permute(int[] nums) {
-        
-        List<Integer> temp=new ArrayList<>();
-        boolean [] backTracking=new boolean[nums.length];
-        generatePermutations(nums,temp,backTracking);
-
-        return result;
-
+        list=new ArrayList<>();
+        boolean[] visited=new boolean[nums.length];
+        solve(nums,visited,new ArrayList<>());
+        return list;
         
     }
-
-    public void generatePermutations(int[] nums, List<Integer> temp, boolean [] backTracking ){
-        if(temp.size()==nums.length){
-            result.add(new ArrayList<>(temp));
+    public static void solve(int[] nums,boolean[] visited,List<Integer>curr){
+        if(curr.size()==nums.length){
+            list.add(new ArrayList<>(curr));
             return;
         }
 
         for(int i=0; i<nums.length; i++){
-            if(!backTracking[i]){
-                backTracking[i]=true;
-                temp.add(nums[i]);
-                generatePermutations(nums,temp,backTracking);
-                temp.remove(temp.size()-1);
-                backTracking[i]=false;
+            if(!visited[i]){
+                visited[i]=true;
+                curr.add(nums[i]);
+                solve(nums,visited,curr);
+                curr.remove(curr.size()-1);
+                visited[i]=false;
             }
         }
     }
