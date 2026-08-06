@@ -1,32 +1,32 @@
 class Solution {
     public int change(int amount, int[] coins) {
-        return Coin_ChangeBU(coins, amount);
+        int [][] dp=new int[amount+1][coins.length];
+        for(int [] a: dp){
+            Arrays.fill(a,-1);
+        }
+        return solve(amount,coins, 0, dp);
+
     }
-
-    public static int Coin_ChangeBU(int[] coins, int amount) {
-        int n = coins.length;
-        int[][] dp = new int[n + 1][amount + 1];
-
-        // Base case: 1 way to make 0 amount (choose nothing)
-        for (int i = 0; i <= n; i++) {
-            dp[i][0] = 1;
+    public static int solve(int amount, int [] coins, int idx, int [][] dp){
+        if(amount==0){
+            return 1;
         }
 
-        // Fill dp
-        for (int i = 1; i <= n; i++) { // coins
-            for (int am = 1; am <= amount; am++) { // amount
-                int inc = 0, exc = 0;
-
-                if (am >= coins[i - 1]) {
-                    inc = dp[i][am - coins[i - 1]]; // include coin
-                }
-
-                exc = dp[i - 1][am]; // exclude coin
-
-                dp[i][am] = inc + exc;
-            }
+        if(idx>=coins.length){
+            return 0;
         }
 
-        return dp[n][amount];
+        if(dp[amount][idx]!=-1){
+            return dp[amount][idx];
+        }
+
+        int skip=solve(amount,coins,idx+1, dp);
+        int take=0;
+        if(amount>=coins[idx]){
+            take=solve(amount-coins[idx], coins,idx, dp);
+        }
+        
+
+        return dp[amount][idx]= skip+take;
     }
 }
