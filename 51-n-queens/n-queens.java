@@ -1,76 +1,92 @@
-import java.util.*;
-
 class Solution {
+    static List<List<String>> result;
+
     public List<List<String>> solveNQueens(int n) {
+
+        result = new ArrayList<>();
+
         char[][] board = new char[n][n];
 
-        // fill board with '.'
-        for (int i = 0; i < n; i++) {
-            Arrays.fill(board[i], '.');
+        for (char[] b : board) {
+            Arrays.fill(b, '.');
         }
 
-        List<List<String>> result = new ArrayList<>();
-        queenPath(board, n, 0, result);
+        solve(board, n, 0);
+
         return result;
     }
 
-    public static void queenPath(char[][] board, int tq, int row, List<List<String>> list) {
+    public static void solve(char[][] board, int tq, int row) {
+
         if (tq == 0) {
-            list.add(construct(board));
+            result.add(construct(board));
             return;
         }
 
+        // Added
+        if (row == board.length)
+            return;
+
         for (int col = 0; col < board[0].length; col++) {
-            if (isItSafe(board, row, col)) {
+
+            if (isSafe(board, row, col)) {
+
                 board[row][col] = 'Q';
-                queenPath(board, tq - 1, row + 1, list);
+
+                solve(board, tq - 1, row + 1);
+
                 board[row][col] = '.';
             }
         }
     }
 
-    public static boolean isItSafe(char[][] board, int row, int col) {
-        int r, c;
+    public static boolean isSafe(char[][] board, int row, int col) {
 
-        // check vertical column
-        r = row;
+        int r = row;
+
         while (r >= 0) {
-            if (board[r][col] == 'Q') {
+
+            if (board[r][col] == 'Q')
                 return false;
-            }
+
             r--;
         }
 
-        // check left diagonal
         r = row;
-        c = col;
+        int c = col;
+
         while (r >= 0 && c >= 0) {
-            if (board[r][c] == 'Q') {
+
+            if (board[r][c] == 'Q')
                 return false;
-            }
+
             r--;
             c--;
         }
 
-        // check right diagonal
         r = row;
         c = col;
+
         while (r >= 0 && c < board[0].length) {
-            if (board[r][c] == 'Q') {
+
+            if (board[r][c] == 'Q')
                 return false;
-            }
+
             r--;
             c++;
         }
 
-        return true;
+        return true;   // Fixed
     }
 
     private static List<String> construct(char[][] board) {
+
         List<String> res = new ArrayList<>();
+
         for (char[] row : board) {
             res.add(new String(row));
         }
+
         return res;
     }
 }
