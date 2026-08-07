@@ -8,36 +8,38 @@ class Solution {
         if(sum%2!=0){
             return false;
         }
-        int [][] dp=new int[nums.length][(sum/2)+1];
-        for(int [] arr:dp){
-            Arrays.fill(arr,-1);
+
+        int [][]dp=new int[nums.length][(sum/2)+1];
+        for(int [] a: dp){
+            Arrays.fill(a,-1);
         }
 
-        return canPartitionArray(nums,sum/2,0,dp);
+        return solve(nums,0,sum/2, dp);
         
     }
-    public boolean canPartitionArray(int []nums,int target, int idx, int [][] dp){
+    public static boolean solve(int [] nums, int idx, int target, int[][]dp){
         if(target==0){
             return true;
         }
+
+        
         if(idx==nums.length){
             return false;
         }
+
         if(dp[idx][target]!=-1){
             return dp[idx][target]==1;
         }
 
-        boolean include=false;
+        boolean skip=solve(nums,idx+1,target, dp);
+        boolean take=false;
 
-        if(nums[idx]<=target){
-            include=canPartitionArray(nums,target-nums[idx], idx+1, dp);
+        if(target>=nums[idx]){
+            take=solve(nums,idx+1,target-nums[idx], dp);
         }
+       boolean ans=take || skip;
 
-        boolean exclude=canPartitionArray(nums,target, idx+1, dp);
-
-        boolean result= include || exclude;
-
-        dp[idx][target]=result?1:0;
-        return result;
+        dp[idx][target]=ans?1:0;
+        return ans;
     }
 }
