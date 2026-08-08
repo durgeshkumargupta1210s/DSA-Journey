@@ -1,47 +1,37 @@
 class Solution {
+    static int [][]dp;
     public int minDistance(String word1, String word2) {
-        int m = word1.length();
-        int n = word2.length();
-        int[][] dp = new int[m + 1][n + 1];
-
-        // initialize dp with -1 (not computed)
-        for (int x = 0; x <= m; x++) {
-            for (int y = 0; y <= n; y++) {
-                dp[x][y] = -1;
-            }
+        dp=new int [word1.length()][word2.length()];
+        for(int [] a: dp){
+            Arrays.fill(a,-1);
         }
-
-        return minimumPath(word1, word2, 0, 0, dp);
+        return solve(word1, word2, 0,0);
+        
     }
-
-    public int minimumPath(String w1, String w2, int i, int j, int[][] dp) {
-        // Base cases
-        if (i == w1.length()) {
-            return w2.length() - j;   // insert remaining of w2
-        }
-        if (j == w2.length()) {
-            return w1.length() - i;   // delete remaining of w1
+    public static int solve(String word1, String word2, int i, int j){
+        if(i==word1.length()){
+            return word2.length()-j;
         }
 
-        if (dp[i][j] != -1) {
+        if(j==word2.length()){
+            return word1.length()-i;
+        }
+
+        if(dp[i][j]!=-1){
             return dp[i][j];
         }
 
         int ans;
-        if (w1.charAt(i) == w2.charAt(j)) {
-            // No operation needed, move both forward
-            ans = minimumPath(w1, w2, i + 1, j + 1, dp);
-        } else {
-            // Insert
-            int insert = minimumPath(w1, w2, i, j + 1, dp);
-            // Delete
-            int delete = minimumPath(w1, w2, i + 1, j, dp);
-            // Replace
-            int replace = minimumPath(w1, w2, i + 1, j + 1, dp);
-
-            ans = Math.min(insert, Math.min(delete, replace)) + 1;
+        if(word1.charAt(i)==word2.charAt(j)){
+            ans=solve(word1,word2,i+1,j+1);
         }
+        else{
+            int insert=1+solve(word1,word2, i, j+1);
+            int delete=1+solve(word1, word2,i+1,j);
+            int replace=1+solve(word1,word2,i+1, j+1);
 
-        return dp[i][j] = ans;
+            ans=Math.min(insert,Math.min(delete,replace));
+        }
+        return dp[i][j]= ans;
     }
 }
